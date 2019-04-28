@@ -1,0 +1,47 @@
+FROM node:11
+MAINTAINER Dongwon Kim <dkim010@gmail.com>
+
+# I refered to https://hub.docker.com/r/picoded/ubuntu-openjdk-8-jdk/dockerfile/
+
+# This is in accordance to : https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04
+RUN apt-get update && \
+	apt-get install -y openjdk-8-jdk && \
+	apt-get install -y ant && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/* && \
+	rm -rf /var/cache/oracle-jdk8-installer;
+	
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+	apt-get install -y ca-certificates-java && \
+	apt-get clean && \
+	update-ca-certificates -f && \
+	rm -rf /var/lib/apt/lists/* && \
+	rm -rf /var/cache/oracle-jdk8-installer;
+
+# Setup JAVA_HOME, this is useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
+
+# yanagishima
+ARG YANAGISHIMA_VERSION=20.0
+WORKDIR /root/
+# clone
+RUN mkdir repo && \
+    cd repo && \
+    git clone https://github.com/yanagishima/yanagishima && \
+    cd yanagishima && \
+    git checkout refs/tags/$YANAGISHIMA_VERSION
+# build
+RUN cd repo/yanagishima/web && \
+    npm install && \
+    npm run build
+RUN cd repo/yanagishima && \
+    ./gradlew :distZip
+
+# extract
+VOLUME /dist
+CMD echo cmd
+
+CMD mv repo/yanagishima/build/distributions/yanagishima-$YANAGISHIMA_VERSION.zip /dist/
