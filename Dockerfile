@@ -1,5 +1,5 @@
 FROM openjdk:8u131-jre-alpine
-MAINTAINER Dongwon Kim <dkim010@gmail.com>
+LABEL maintainer="dkim010@gmail.com"
 
 ARG YANAGISHIMA_VERSION=20.0
 WORKDIR /root/

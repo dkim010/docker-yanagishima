@@ -1,5 +1,5 @@
 FROM node:11
-MAINTAINER Dongwon Kim <dkim010@gmail.com>
+LABEL maintainer="dkim010@gmail.com"
 
 # I refered to https://hub.docker.com/r/picoded/ubuntu-openjdk-8-jdk/dockerfile/
 
